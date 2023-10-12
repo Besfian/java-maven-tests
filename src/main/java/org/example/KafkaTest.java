@@ -19,6 +19,7 @@ import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -35,6 +36,9 @@ public class KafkaTest {
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private KafkaEmbedded embeddedKafka;
 
     private Consumer<String, String> consumer;
 
@@ -70,6 +74,7 @@ public class KafkaTest {
         assertEquals(message, record.value());
     }
 }
+
 
 
 //implementation 'org.springframework.kafka:spring-kafka'
