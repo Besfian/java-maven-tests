@@ -8,11 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 
@@ -35,7 +33,7 @@ public class KafkaTest {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
+    private ConsumerFactory<String, String> consumerFactory;
 
     private Consumer<String, String> consumer;
 
@@ -43,11 +41,7 @@ public class KafkaTest {
 
     @BeforeEach
     public void setUp() {
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafkaBroker.getBrokersAsString());
-        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
-        consumer = cf.createConsumer();
-        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, TEST_TOPIC);
+        consumer = consumerFactory.createConsumer();
         records = new LinkedBlockingQueue<>();
         consumer.subscribe(Collections.singletonList(TEST_TOPIC));
     }
@@ -71,6 +65,9 @@ public class KafkaTest {
         assertEquals(message, record.value());
     }
 }
+//spring:
+//        kafka:
+//        bootstrap-servers: ${spring.embedded.kafka.brokers}
 
 
 
